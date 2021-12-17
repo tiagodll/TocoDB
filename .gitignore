@@ -33,3 +33,4 @@ paket-files/
 .vs/
 *.db
 migrations/
+publish/
