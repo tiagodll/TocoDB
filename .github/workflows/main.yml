@@ -1,0 +1,32 @@
+name: "tagged-release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v1
+      with:
+          dotnet-version: '6.0.x'
+        
+    - name: Build with dotnet
+      run: dotnet build --configuration Release
+
+    - name: dotnet publish
+      run: dotnet publish -c Release -o ./publish -p:PublishSingleFile=true -p:PublishReadyToRun=true --self-contained --runtime linux-x64
+        
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      name: publish a release
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: false
+        files: |
+          ./publish/libe_sqlite3.so
+          ./publish/TocoDB
